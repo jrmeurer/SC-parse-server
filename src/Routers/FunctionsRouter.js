@@ -116,9 +116,33 @@ export class FunctionsRouter extends PromiseRouter {
         if (typeof message === 'string') {
           return reject(new Parse.Error(code, message));
         }
+
+        
+        
+        // $JMJ: Modified in fork.
         if (message instanceof Error) {
-          message = message.message;
+
+          if (message instanceof CloudError) {
+            message = message.message;
+          } else {
+            // Internal server crash
+            console.error(message.stack)
+
+            // Use handler defined in $error.js
+            if (global.HandleServerCrash) {
+              HandleServerCrash(message.stack);
+            }
+
+            // Replace message with something like this.
+            message = 'Something went wrong. Please try again or contact support.'
+          }
         }
+
+        // if (message instanceof Error) {
+        //   message = message.message;
+        // }
+
+
         reject(new Parse.Error(code, message));
       },
       message: message,
