@@ -119,8 +119,6 @@ export class FunctionsRouter extends PromiseRouter {
           if (message instanceof global.CloudError) {
             message = message.message;
           } else {
-            // Internal server crash
-            console.error(message.stack)
 
             // Use handler defined in $error.js
             if (global.HandleServerCrash) {
