@@ -106,6 +106,26 @@ export class FunctionsRouter extends PromiseRouter {
         });
       },
       error: function (message) {
+
+        // $JMJ: Modified in fork.
+        if (message instanceof Error) {
+
+          if (message instanceof global.CloudError) {
+            message = message.message;
+          } else {
+            // Internal server crash
+            console.error(message.stack)
+
+            // Use handler defined in $error.js
+            if (global.HandleServerCrash) {
+              global.HandleServerCrash(message.stack);
+            }
+
+            // Replace message with something like this.
+            message = 'Something went wrong. Please try again or contact support.'
+          }
+        }
+
         const error = triggers.resolveError(message);
         reject(error);
       },
