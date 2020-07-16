@@ -84,6 +84,12 @@ export class FunctionsRouter extends PromiseRouter {
             },
             error => {
               jobHandler.setFailed(error);
+
+              // $JMJ: modified
+              // Use handler defined in $error.js
+              if (global.HandleJobError) {
+                HandleJobError(jobName, params, JSON.stringify(error));
+              }
             }
           );
       });
@@ -96,7 +102,7 @@ export class FunctionsRouter extends PromiseRouter {
     });
   }
 
-  static createResponseObject(resolve, reject) {
+  static createResponseObject(userString /* $JMJ: Modified in fork. */, resolve, reject) {
     return {
       success: function (result) {
         resolve({
@@ -120,7 +126,7 @@ export class FunctionsRouter extends PromiseRouter {
 
             // Use handler defined in $error.js
             if (global.HandleServerCrash) {
-              HandleServerCrash(message.stack);
+              HandleServerCrash(message.stack, userString);
             }
 
             // Replace message with something like this.
@@ -164,6 +170,7 @@ export class FunctionsRouter extends PromiseRouter {
       const userString = req.auth && req.auth.user ? req.auth.user.id : undefined;
       const cleanInput = logger.truncateLogMessage(JSON.stringify(params));
       const { success, error } = FunctionsRouter.createResponseObject(
+        userString, /* $JMJ: Modified in fork. */
         result => {
           try {
             const cleanResult = logger.truncateLogMessage(JSON.stringify(result.response.result));
@@ -193,6 +200,15 @@ export class FunctionsRouter extends PromiseRouter {
               }
             );
             reject(error);
+
+
+            // $JMJ: modified
+            // Use handler defined in $error.js
+            if (global.HandleCloudFunctionError) {
+              HandleCloudFunctionError(functionName, params, JSON.stringify(error), userString);
+            }
+
+
           } catch (e) {
             reject(e);
           }
