@@ -88,7 +88,7 @@ export class FunctionsRouter extends PromiseRouter {
               // $JMJ: modified
               // Use handler defined in $error.js
               if (global.HandleJobError) {
-                HandleJobError(jobName, params, JSON.stringify(error));
+                HandleJobError(jobName, params, error);
               }
             }
           );
@@ -235,7 +235,7 @@ export class FunctionsRouter extends PromiseRouter {
             // $JMJ: modified
             // Use handler defined in $error.js
             if (global.HandleCloudFunctionError) {
-              HandleCloudFunctionError(functionName, params, JSON.stringify(error), userString);
+              HandleCloudFunctionError(functionName, params, error, userString);
             }
 
 
