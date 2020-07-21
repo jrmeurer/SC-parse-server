@@ -9,6 +9,9 @@ import { jobStatusHandler } from '../StatusHandler';
 import _ from 'lodash';
 import { logger } from '../logger';
 
+// $JMJ: UPDATED
+exports.REPLACE_CRASH_ERRORS_WITH_MESSAGE = true;
+
 function parseObject(obj) {
   if (Array.isArray(obj)) {
     return obj.map(item => {
@@ -127,7 +130,13 @@ export class FunctionsRouter extends PromiseRouter {
               HandleServerCrash(message.stack, userString);
             }
 
-            // Replace message with something like this.
+            if (exports.REPLACE_CRASH_ERRORS_WITH_MESSAGE) {
+              // Replace crash error message for clients.
+              message = 'Something went wrong. Please try again or contact support.';  
+            } else {
+              message = message.message;‘
+            }
+
             message = 'Something went wrong. Please try again or contact support.'
           }
         }
