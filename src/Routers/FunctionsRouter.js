@@ -134,7 +134,7 @@ export class FunctionsRouter extends PromiseRouter {
               // Replace crash error message for clients.
               message = 'Something went wrong. Please try again or contact support.';  
             } else {
-              message = message.message;‘
+              message = message.message;
             }
 
             message = 'Something went wrong. Please try again or contact support.'
