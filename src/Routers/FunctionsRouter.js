@@ -91,7 +91,7 @@ export class FunctionsRouter extends PromiseRouter {
               // $JMJ: modified
               // Use handler defined in $error.js
               if (global.HandleJobError) {
-                HandleJobError(jobName, params, error);
+                global.HandleJobError(jobName, params, error);
               }
             }
           );
@@ -115,39 +115,28 @@ export class FunctionsRouter extends PromiseRouter {
         });
       },
       error: function (message) {
-
-        
-        
-        // $JMJ: Modified in fork.
         if (message instanceof Error) {
-
-          if (message instanceof CloudError) {
+          if (message instanceof global.CloudError) {
             message = message.message;
           } else {
-
             // Use handler defined in $error.js
             if (global.HandleServerCrash) {
-              HandleServerCrash(message.stack, userString);
+              global.HandleServerCrash(message.stack, userString);
             }
 
             if (exports.REPLACE_CRASH_ERRORS_WITH_MESSAGE) {
               // Replace crash error message for clients.
-              message = 'Something went wrong. Please try again or contact support.';  
+              message = 'Something went wrong. Please try again or contact support.';
             } else {
               message = message.message;
             }
 
-            message = 'Something went wrong. Please try again or contact support.'
+            message = 'Something went wrong. Please try again or contact support.';
           }
         }
 
-        // if (message instanceof Error) {
-        //   message = message.message;
-          // }
-          
-          const error = triggers.resolveError(message);
-          reject(error);
-
+        const error = triggers.resolveError(message);
+        reject(error);
       },
     };
   }
@@ -177,7 +166,7 @@ export class FunctionsRouter extends PromiseRouter {
       const userString = req.auth && req.auth.user ? req.auth.user.id : undefined;
       const cleanInput = logger.truncateLogMessage(JSON.stringify(params));
       const { success, error } = FunctionsRouter.createResponseObject(
-        userString, /* $JMJ: Modified in fork. */
+        userString /* $JMJ: Modified in fork. */,
         result => {
           try {
             const cleanResult = logger.truncateLogMessage(JSON.stringify(result.response.result));
@@ -208,14 +197,11 @@ export class FunctionsRouter extends PromiseRouter {
             );
             reject(error);
 
-
             // $JMJ: modified
             // Use handler defined in $error.js
             if (global.HandleCloudFunctionError) {
-              HandleCloudFunctionError(functionName, params, error, userString);
+              global.HandleCloudFunctionError(functionName, params, error, userString);
             }
-
-
           } catch (e) {
             reject(e);
           }
