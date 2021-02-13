@@ -4,7 +4,10 @@ var Parse = require('parse/node').Parse,
   triggers = require('../triggers');
 
 import PromiseRouter from '../PromiseRouter';
-import { promiseEnforceMasterKeyAccess, promiseEnsureIdempotency } from '../middlewares';
+import {
+  promiseEnforceMasterKeyAccess,
+  promiseEnsureIdempotency,
+} from '../middlewares';
 import { jobStatusHandler } from '../StatusHandler';
 import _ from 'lodash';
 import { logger } from '../logger';
@@ -91,7 +94,7 @@ export class FunctionsRouter extends PromiseRouter {
               // $JMJ: modified
               // Use handler defined in $error.js
               if (global.HandleJobError) {
-                HandleJobError(jobName, params, error);
+                global.HandleJobError(jobName, params, error);
               }
             }
           );
@@ -105,7 +108,11 @@ export class FunctionsRouter extends PromiseRouter {
     });
   }
 
-  static createResponseObject(userString /* $JMJ: Modified in fork. */, resolve, reject) {
+  static createResponseObject(
+    userString /* $JMJ: Modified in fork. */,
+    resolve,
+    reject,
+  ) {
     return {
       success: function (result) {
         resolve({
@@ -122,7 +129,6 @@ export class FunctionsRouter extends PromiseRouter {
           if (message instanceof global.CloudError) {
             message = message.message;
           } else {
-
             // Use handler defined in $error.js
             if (global.HandleServerCrash) {
               global.HandleServerCrash(message.stack, userString);
@@ -134,8 +140,6 @@ export class FunctionsRouter extends PromiseRouter {
             } else {
               message = message.message;
             }
-
-            message = 'Something went wrong. Please try again or contact support.'
           }
         }
 
@@ -169,12 +173,8 @@ export class FunctionsRouter extends PromiseRouter {
     return new Promise(function (resolve, reject) {
       const userString = req.auth && req.auth.user ? req.auth.user.id : undefined;
       const cleanInput = logger.truncateLogMessage(JSON.stringify(params));
-<<<<<<< HEAD
       const { success, error } = FunctionsRouter.createResponseObject(
-=======
-      const { success, error, message } = FunctionsRouter.createResponseObject(
-        userString, /* $JMJ: Modified in fork. */
->>>>>>> 758aadcd (Update)
+        userString /* $JMJ: Modified in fork. */,
         result => {
           try {
             const cleanResult = logger.truncateLogMessage(JSON.stringify(result.response.result));
@@ -205,14 +205,16 @@ export class FunctionsRouter extends PromiseRouter {
             );
             reject(error);
 
-
             // $JMJ: modified
             // Use handler defined in $error.js
             if (global.HandleCloudFunctionError) {
-              HandleCloudFunctionError(functionName, params, error, userString);
+              global.HandleCloudFunctionError(
+                functionName,
+                params,
+                error,
+                userString
+              );
             }
-
-
           } catch (e) {
             reject(e);
           }
