@@ -283,17 +283,12 @@ export class UserController extends AdaptableController {
     const salutation = user.get('firstName')
       ? `Hi, ${user.get('firstName')}!`
       : 'Good day!';
-
-    const text =
-      `${salutation}\n\nPlease confirm your email address ${user.get(
-        'email'
-      )}` +
-      ` for ${appName} to verify your account.\n\n` +
-      '<a href="' +
-      link +
-      '">Click here to confirm</a> your email.\n\nThanks!\nThe Shortcut Team';
+    const text = `${salutation}\n\nPlease confirm your email address ${user.get(
+      'email'
+    )} for ${appName} to verify your account.\n\n<a href=${link}>Click here to confirm</a> your email.\n\nThanks!\nThe Shortcut Team`;
+    console.log(text);
     const to = user.get('email');
-    const subject = 'Please verify your email for ' + appName;
+    const subject = `Please verify your email for ${appName}`;
     return { text, to, subject };
   }
 
