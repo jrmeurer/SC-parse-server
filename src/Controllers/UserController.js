@@ -280,12 +280,14 @@ export class UserController extends AdaptableController {
   }
 
   defaultVerificationEmail({ link, user, appName }) {
+    // NOTE: Modified to use <br> instead of \n,
+    //  because we're using SC-sendgrid-adapter, which sends as HTML instead of text.
     const salutation = user.get('firstName')
       ? `Hi, ${user.get('firstName')}!`
       : 'Good day!';
-    const text = `${salutation}\n\nPlease confirm your email address ${user.get(
+    const text = `${salutation}<br><br>Please confirm your email address ${user.get(
       'email'
-    )} for ${appName} to verify your account.\n\n<a href=${link}>Click here to confirm</a> your email.\n\nThanks!\nThe Shortcut Team`;
+    )} for ${appName} to verify your account.<br><br><a href=${link}>Click here to confirm</a> your email.<br><br>Thanks!<br>The Shortcut Team`;
     console.log(text);
     const to = user.get('email');
     const subject = `Please verify your email for ${appName}`;
@@ -293,14 +295,18 @@ export class UserController extends AdaptableController {
   }
 
   defaultResetPasswordEmail({ link, user, appName }) {
+    // NOTE: Modified to use <br> instead of \n,
+    //  because we're using SC-sendgrid-adapter, which sends as HTML instead of text.
     const text =
-      'Hi,\n\n' +
+      'Hi,<br><br>' +
       'You requested to reset your password for ' +
       appName +
-      (user.get('username') ? " (your username is '" + user.get('username') + "')" : '') +
-      '.\n\n' +
+      (user.get('username')
+        ? " (your username is '" + user.get('username') + "')"
+        : '') +
+      '.<br><br>' +
       '' +
-      'Click here to reset it:\n' +
+      'Click here to reset it:<br>' +
       link;
     const to = user.get('email') || user.get('username');
     const subject = 'Password Reset for ' + appName;
