@@ -4,10 +4,7 @@ var Parse = require('parse/node').Parse,
   triggers = require('../triggers');
 
 import PromiseRouter from '../PromiseRouter';
-import {
-  promiseEnforceMasterKeyAccess,
-  promiseEnsureIdempotency,
-} from '../middlewares';
+import { promiseEnforceMasterKeyAccess, promiseEnsureIdempotency } from '../middlewares';
 import { jobStatusHandler } from '../StatusHandler';
 import _ from 'lodash';
 import { logger } from '../logger';
@@ -108,11 +105,7 @@ export class FunctionsRouter extends PromiseRouter {
     });
   }
 
-  static createResponseObject(
-    userString /* $JMJ: Modified in fork. */,
-    resolve,
-    reject,
-  ) {
+  static createResponseObject(userString /* $JMJ: Modified in fork. */, resolve, reject) {
     return {
       success: function (result) {
         resolve({
@@ -122,10 +115,8 @@ export class FunctionsRouter extends PromiseRouter {
         });
       },
       error: function (message) {
-
         // $JMJ: Modified in fork.
         if (message instanceof Error) {
-
           if (message instanceof global.CloudError) {
             message = message.message;
           } else {
@@ -134,7 +125,8 @@ export class FunctionsRouter extends PromiseRouter {
               global.HandleServerCrash(message.stack, userString);
             }
 
-            if (exports.REPLACE_CRASH_ERRORS_WITH_MESSAGE) {
+            const isParseError = message instanceof Parse.Error;
+            if (!isParseError && exports.REPLACE_CRASH_ERRORS_WITH_MESSAGE) {
               // Replace crash error message for clients.
               message = 'Something went wrong. Please try again or contact support.';
             } else {
@@ -208,12 +200,7 @@ export class FunctionsRouter extends PromiseRouter {
             // $JMJ: modified
             // Use handler defined in $error.js
             if (global.HandleCloudFunctionError) {
-              global.HandleCloudFunctionError(
-                functionName,
-                params,
-                error,
-                userString
-              );
+              global.HandleCloudFunctionError(functionName, params, error, userString);
             }
           } catch (e) {
             reject(e);
