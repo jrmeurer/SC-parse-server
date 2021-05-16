@@ -117,7 +117,10 @@ export class FunctionsRouter extends PromiseRouter {
       error: function (message) {
         // $JMJ: Modified in fork.
         if (message instanceof Error) {
-          if (message instanceof global.CloudError) {
+          const isParseError = message instanceof Parse.Error;
+          const isCloudError = message instanceof global.CloudError;
+
+          if (isParseError || isCloudError) {
             message = message.message;
           } else {
             // Use handler defined in $error.js
@@ -125,8 +128,7 @@ export class FunctionsRouter extends PromiseRouter {
               global.HandleServerCrash(message.stack, userString);
             }
 
-            const isParseError = message instanceof Parse.Error;
-            if (!isParseError && exports.REPLACE_CRASH_ERRORS_WITH_MESSAGE) {
+            if (exports.REPLACE_CRASH_ERRORS_WITH_MESSAGE) {
               // Replace crash error message for clients.
               message = 'Something went wrong. Please try again or contact support.';
             } else {
